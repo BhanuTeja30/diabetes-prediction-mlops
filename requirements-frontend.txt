@@ -1,0 +1,6 @@
+# Streamlit frontend (talks to the API over HTTP; does not load the model).
+streamlit==1.63.0
+requests==2.34.2
+pydantic==2.13.4
+PyYAML==6.0.3
+pandas==2.3.3

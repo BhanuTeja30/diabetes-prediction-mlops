@@ -1,0 +1,11 @@
+# Public entry point. With a host name in SITE_ADDRESS, Caddy obtains and renews an HTTPS certificate.
+{$SITE_ADDRESS} {
+	encode gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+	reverse_proxy frontend:8501
+}

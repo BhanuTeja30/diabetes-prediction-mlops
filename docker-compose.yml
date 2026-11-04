@@ -1,0 +1,115 @@
+# Start:   docker compose up -d --build      (train + promote a model first, see README)
+# Inspect: docker compose ps / docker compose logs -f api
+# Stop:    docker compose down                (add -v to also delete MLflow/Prometheus/Grafana volumes)
+name: diabetes-mlops
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: diabetes-mlops/api:1.0.0
+    ports:
+      - "${API_PORT:-8000}:8000"
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MODEL_DIR: /app/models/production
+      MONITORING_LOG_PREDICTIONS: ${MONITORING_LOG_PREDICTIONS:-true}
+      MONITORING_LOG_FEATURES: ${MONITORING_LOG_FEATURES:-false}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      AUTH_SECRET_KEY: ${AUTH_SECRET_KEY:?Set AUTH_SECRET_KEY in .env (copy .env.example)}
+      TOKEN_TTL_MINUTES: ${TOKEN_TTL_MINUTES:-60}
+      ALLOW_SELF_REGISTRATION: ${ALLOW_SELF_REGISTRATION:-true}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-}         # bootstrap admin, only used if no admin exists
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    volumes:
+      - ./models:/app/models:ro                       # trained + promoted artifacts
+      - ./data/processed:/app/data/processed:ro       # drift reference data
+      - ./reports/drift:/app/reports/drift            # drift reports (admin drift check writes here)
+      - ./data/monitoring:/app/data/monitoring        # privacy-conscious monitoring logs
+      - ./data/auth:/app/data/auth                    # user accounts (hashed passwords)
+    networks: [mlops]
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: diabetes-mlops/frontend:1.0.0
+    ports:
+      - "${FRONTEND_PORT:-8501}:8501"
+    environment:
+      API_URL: http://api:8000
+    volumes:
+      - ./reports/evaluation:/app/reports/evaluation:ro
+    depends_on:
+      api:
+        condition: service_started   # the UI explains clearly when no model is loaded
+    networks: [mlops]
+    restart: unless-stopped
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.mlflow
+    image: diabetes-mlops/mlflow:3.15.0
+    # MLflow rejects requests whose Host header is not allowed, so include the published port.
+    command:
+      - mlflow
+      - server
+      - --backend-store-uri=sqlite:////mlflow/mlflow.db
+      - --artifacts-destination=/mlflow/artifacts
+      - --serve-artifacts
+      - --host=0.0.0.0
+      - --port=5000
+      - --allowed-hosts=localhost:${MLFLOW_PORT:-5000},127.0.0.1:${MLFLOW_PORT:-5000},mlflow:5000,localhost,mlflow
+    ports:
+      - "${MLFLOW_PORT:-5000}:5000"
+    volumes:
+      - mlflow-data:/mlflow
+    networks: [mlops]
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      - api
+    networks: [mlops]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in .env (copy .env.example)}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks: [mlops]
+    restart: unless-stopped
+
+volumes:
+  mlflow-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  mlops:
+    driver: bridge

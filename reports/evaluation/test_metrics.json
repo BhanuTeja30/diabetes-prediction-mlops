@@ -1,0 +1,39 @@
+{
+  "model_name": "Random Forest",
+  "model_version": "1.1.0",
+  "test_metrics": {
+    "threshold": 0.502677015632962,
+    "n": 154,
+    "accuracy": 0.7532467532467533,
+    "precision": 0.6212121212121212,
+    "recall": 0.7592592592592593,
+    "specificity": 0.75,
+    "f1": 0.6833333333333333,
+    "roc_auc": 0.8196296296296296,
+    "pr_auc": 0.6866666009690677,
+    "brier_score": 0.17041160127317204,
+    "false_negative_rate": 0.24074074074074073,
+    "false_positive_rate": 0.25,
+    "confusion_matrix": {
+      "tn": 75,
+      "fp": 25,
+      "fn": 13,
+      "tp": 41
+    }
+  },
+  "acceptance": {
+    "passed": true,
+    "checks": {
+      "min_test_recall": true,
+      "min_test_roc_auc": true,
+      "max_test_brier_score": true,
+      "min_test_specificity": true
+    }
+  },
+  "plots": [
+    "reports/evaluation/confusion_matrix.png",
+    "reports/evaluation/roc_curve.png",
+    "reports/evaluation/precision_recall_curve.png",
+    "reports/evaluation/calibration_curve.png"
+  ]
+}

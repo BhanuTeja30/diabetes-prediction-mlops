@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Secrets
+.env
+
+# Data: versioned by DVC, never committed to git (may contain health records)
+/data/raw/*
+!/data/raw/.gitkeep
+!/data/raw/*.dvc
+/data/approved/
+/data/retraining/
+/data/monitoring/*
+/data/auth/
+!/data/monitoring/.gitkeep
+
+# Model artifacts: managed by DVC / MLflow
+/models/production/
+/models/archive/
+/models/promotion_log.json
+
+# MLflow local store
+mlflow.db
+mlruns/
+mlartifacts/
+
+# Generated monitoring reports
+/reports/drift/*
+!/reports/drift/.gitkeep
+/reports/retraining/*
+!/reports/retraining/.gitkeep
+/reports/evaluation/promotion_check_*.json
+
+# Start/stop script logs
+/logs/
+
+# AWS deployment state and SSH key
+/deploy/.state
+/deploy/*.pem

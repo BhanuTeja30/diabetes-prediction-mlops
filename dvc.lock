@@ -1,0 +1,178 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m src.data_processing
+    deps:
+    - path: data/raw/diabetes_raw.csv
+      hash: md5
+      md5: 56a8d8ae619fcc223941e54f361b8406
+      size: 23278
+    - path: src/common.py
+      hash: md5
+      md5: 23e2e6a44faadab3240f26e7857046ec
+      size: 2914
+    - path: src/data_processing.py
+      hash: md5
+      md5: c5edb4f4788debb6818464fa818b760b
+      size: 12411
+    params:
+      params.yaml:
+        data:
+          source_url: 
+            https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv
+          source_name: Pima Indians Diabetes Database (NIDDK; distributed via 
+            the UCI ML Repository / Kaggle)
+          raw_path: data/raw/diabetes_raw.csv
+          expected_sha256: 
+            6bfe5d0f379d17a0e0819b996407e3c09bf80febd4287f2ed212190dfff154af
+          processed_dir: data/processed
+        split:
+          random_seed: 42
+          validation_size: 0.2
+          test_size: 0.2
+        zero_as_missing:
+        - glucose
+        - blood_pressure
+        - skin_thickness
+        - insulin
+        - bmi
+    outs:
+    - path: data/processed/data_summary.json
+      hash: md5
+      md5: 58eacca4555568c9fb0b9d5ed4c9b9c7
+      size: 4194
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 28d5a15936bf5d2055be67d1a96055f8
+      size: 5673
+    - path: data/processed/train.csv
+      hash: md5
+      md5: d1401ae58d3e656a5a9ce2911fa89fc7
+      size: 17035
+    - path: data/processed/validation.csv
+      hash: md5
+      md5: 99830560a46e821318794b55b989cb26
+      size: 5747
+    - path: reports/figures
+      hash: md5
+      md5: 4ef141033f0d8b16450b074682140af9.dir
+      size: 447622
+      nfiles: 6
+  train:
+    cmd: python -m src.train
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: d1401ae58d3e656a5a9ce2911fa89fc7
+      size: 17035
+    - path: data/processed/validation.csv
+      hash: md5
+      md5: 99830560a46e821318794b55b989cb26
+      size: 5747
+    - path: src/evaluate.py
+      hash: md5
+      md5: 697e037c9294471a0e37f9b3b9745d49
+      size: 8926
+    - path: src/features.py
+      hash: md5
+      md5: 3f38733be9c8675c71edfd2d80d6ac03
+      size: 1550
+    - path: src/tracking.py
+      hash: md5
+      md5: bced723a66cd04c73dea2fdc0d7b0db9
+      size: 1507
+    - path: src/train.py
+      hash: md5
+      md5: 80433fb5248ca50eaf62b98ab3851f11
+      size: 12825
+    params:
+      params.yaml:
+        models:
+          logistic_regression:
+            C: 1.0
+            max_iter: 1000
+            class_weight: balanced
+          random_forest:
+            n_estimators: 400
+            max_depth: 6
+            min_samples_leaf: 4
+            class_weight: balanced
+          xgboost:
+            n_estimators: 300
+            max_depth: 3
+            learning_rate: 0.05
+            subsample: 0.9
+            colsample_bytree: 0.9
+            scale_pos_weight:
+        selection:
+          target_recall: 0.8
+          primary_metric: specificity
+          tie_breaker: brier_score
+        split.random_seed: 42
+        zero_as_missing:
+        - glucose
+        - blood_pressure
+        - skin_thickness
+        - insulin
+        - bmi
+    outs:
+    - path: models/candidate/metadata.json
+      hash: md5
+      md5: 7eb2efdd7c75e3d7b48454eb7591391a
+      size: 6595
+    - path: models/candidate/model.joblib
+      hash: md5
+      md5: cc63083cc61331c2057a61583bacdc94
+      size: 1902194
+    - path: reports/evaluation/validation_comparison.json
+      hash: md5
+      md5: 67dbcbf534582a826e10ca6ca5b559f5
+      size: 4148
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+    - path: configs/model_config.yaml
+      hash: md5
+      md5: 6dc5e89a0b58970d3821a0384ab8936e
+      size: 2820
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 28d5a15936bf5d2055be67d1a96055f8
+      size: 5673
+    - path: models/candidate/metadata.json
+      hash: md5
+      md5: 7eb2efdd7c75e3d7b48454eb7591391a
+      size: 6595
+    - path: models/candidate/model.joblib
+      hash: md5
+      md5: cc63083cc61331c2057a61583bacdc94
+      size: 1902194
+    - path: src/evaluate.py
+      hash: md5
+      md5: 697e037c9294471a0e37f9b3b9745d49
+      size: 8926
+    outs:
+    - path: models/candidate/evaluation.json
+      hash: md5
+      md5: d743c95b61574bde010d874c8626cb6e
+      size: 791
+    - path: reports/evaluation/calibration_curve.png
+      hash: md5
+      md5: e326b0d971878de98d084aa0b7aa8398
+      size: 32836
+    - path: reports/evaluation/confusion_matrix.png
+      hash: md5
+      md5: 5319da8a3b2ee5e8a4e7783b9d5760ff
+      size: 15698
+    - path: reports/evaluation/precision_recall_curve.png
+      hash: md5
+      md5: 2ca055363d6f1a6c9d8d853150e82210
+      size: 24068
+    - path: reports/evaluation/roc_curve.png
+      hash: md5
+      md5: d3c631480ccaca0652064abba2a156ba
+      size: 27923
+    - path: reports/evaluation/test_metrics.json
+      hash: md5
+      md5: 669b40f7fddcabb6cbee2f2340da8315
+      size: 1027
