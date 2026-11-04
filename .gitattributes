@@ -1,0 +1,2 @@
+# Deploy scripts run on Linux servers: keep LF line endings on every platform.
+*.sh text eol=lf

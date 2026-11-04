@@ -1,0 +1,13 @@
+# FastAPI prediction service. ML library versions MUST match the training environment.
+fastapi==0.141.1
+uvicorn==0.52.1
+pydantic==2.13.4
+prometheus_client==0.26.0
+PyYAML==6.0.3
+numpy==2.5.1
+pandas==2.3.3
+scikit-learn==1.9.0
+xgboost==3.4.1
+joblib==1.5.3
+python-multipart==0.0.32   # file uploads (admin drift check)
+evidently==0.7.21          # admin drift check runs inside the API

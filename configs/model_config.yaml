@@ -1,0 +1,51 @@
+# Serving, monitoring and governance configuration.
+# Paths are relative to the project root unless they are absolute.
+
+model:
+  production_dir: models/production
+  candidate_dir: models/candidate
+  archive_dir: models/archive
+  artifact_name: model.joblib
+  metadata_name: metadata.json
+
+# Allowed input ranges. Shared by the API (Pydantic validation) and the Streamlit form,
+# so both sides always agree. A value of 0 for skin_thickness / insulin means
+# "not measured" and is imputed by the model pipeline exactly as during training.
+input_limits:
+  pregnancies:                {min: 0,    max: 20,   step: 1,    label: "Pregnancies",                     unit: "count"}
+  glucose:                    {min: 40,   max: 300,  step: 1,    label: "Glucose (2-h OGTT)",              unit: "mg/dL"}
+  blood_pressure:             {min: 30,   max: 140,  step: 1,    label: "Diastolic blood pressure",        unit: "mm Hg"}
+  skin_thickness:             {min: 0,    max: 100,  step: 1,    label: "Triceps skin-fold thickness",     unit: "mm (0 = not measured)"}
+  insulin:                    {min: 0,    max: 900,  step: 1,    label: "2-hour serum insulin",            unit: "µU/mL (0 = not measured)"}
+  bmi:                        {min: 10.0, max: 70.0, step: 0.1,  label: "Body-mass index",                 unit: "kg/m²"}
+  diabetes_pedigree_function: {min: 0.05, max: 2.5,  step: 0.01, label: "Diabetes pedigree function",      unit: "score"}
+  age:                        {min: 18,   max: 100,  step: 1,    label: "Age",                             unit: "years"}
+
+# Checks a candidate model must pass before it may be promoted (src/promote_model.py).
+acceptance_criteria:
+  min_test_recall: 0.70
+  min_test_roc_auc: 0.78
+  max_test_brier_score: 0.20
+  min_test_specificity: 0.50
+  # Candidate ROC-AUC may not be worse than production by more than this on the same test set.
+  max_roc_auc_regression: 0.02
+  max_recall_regression: 0.03
+
+monitoring:
+  # Features compared against the training reference distribution.
+  drift_features: [glucose, bmi, blood_pressure, age, insulin, skin_thickness, pregnancies, diabetes_pedigree_function]
+  # A feature is "drifted" when Evidently's per-column test detects drift.
+  # An alert is raised when the share of drifted features reaches this threshold.
+  drift_share_threshold: 0.3
+  # Alert when the predicted-positive rate differs from the reference rate by more than this (absolute).
+  prediction_rate_shift_threshold: 0.15
+  # Do not compute drift on fewer rows than this (statistics would be meaningless).
+  min_current_rows: 30
+  reference_path: data/processed/train.csv
+  predictions_log: data/monitoring/predictions.csv
+  features_log: data/monitoring/inputs.csv
+  reports_dir: reports/drift
+  status_file: reports/drift/latest_status.json
+
+api:
+  max_request_bytes: 4096

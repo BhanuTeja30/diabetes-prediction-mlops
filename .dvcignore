@@ -1,0 +1,7 @@
+# Paths DVC should not scan
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+mlruns/
+mlartifacts/
+.venv/

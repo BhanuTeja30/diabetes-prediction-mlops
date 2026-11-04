@@ -1,0 +1,187 @@
+{
+  "raw_path": "data\\raw\\diabetes_raw.csv",
+  "raw_sha256": "6bfe5d0f379d17a0e0819b996407e3c09bf80febd4287f2ed212190dfff154af",
+  "profile": {
+    "n_rows": 768,
+    "n_columns": 9,
+    "columns": {
+      "pregnancies": "int64",
+      "glucose": "int64",
+      "blood_pressure": "int64",
+      "skin_thickness": "int64",
+      "insulin": "int64",
+      "bmi": "float64",
+      "diabetes_pedigree_function": "float64",
+      "age": "int64",
+      "outcome": "int64"
+    },
+    "missing_values": {
+      "pregnancies": 0,
+      "glucose": 0,
+      "blood_pressure": 0,
+      "skin_thickness": 0,
+      "insulin": 0,
+      "bmi": 0,
+      "diabetes_pedigree_function": 0,
+      "age": 0,
+      "outcome": 0
+    },
+    "duplicate_rows": 0,
+    "class_distribution": {
+      "0": 500,
+      "1": 268
+    },
+    "positive_rate": 0.3489583333333333,
+    "zero_counts": {
+      "pregnancies": 111,
+      "glucose": 5,
+      "blood_pressure": 35,
+      "skin_thickness": 227,
+      "insulin": 374,
+      "bmi": 11,
+      "diabetes_pedigree_function": 0,
+      "age": 0
+    },
+    "zero_treated_as_missing": [
+      "glucose",
+      "blood_pressure",
+      "skin_thickness",
+      "insulin",
+      "bmi"
+    ],
+    "describe": {
+      "pregnancies": {
+        "count": 768.0,
+        "mean": 3.845,
+        "std": 3.37,
+        "min": 0.0,
+        "25%": 1.0,
+        "50%": 3.0,
+        "75%": 6.0,
+        "max": 17.0
+      },
+      "glucose": {
+        "count": 768.0,
+        "mean": 120.895,
+        "std": 31.973,
+        "min": 0.0,
+        "25%": 99.0,
+        "50%": 117.0,
+        "75%": 140.25,
+        "max": 199.0
+      },
+      "blood_pressure": {
+        "count": 768.0,
+        "mean": 69.105,
+        "std": 19.356,
+        "min": 0.0,
+        "25%": 62.0,
+        "50%": 72.0,
+        "75%": 80.0,
+        "max": 122.0
+      },
+      "skin_thickness": {
+        "count": 768.0,
+        "mean": 20.536,
+        "std": 15.952,
+        "min": 0.0,
+        "25%": 0.0,
+        "50%": 23.0,
+        "75%": 32.0,
+        "max": 99.0
+      },
+      "insulin": {
+        "count": 768.0,
+        "mean": 79.799,
+        "std": 115.244,
+        "min": 0.0,
+        "25%": 0.0,
+        "50%": 30.5,
+        "75%": 127.25,
+        "max": 846.0
+      },
+      "bmi": {
+        "count": 768.0,
+        "mean": 31.993,
+        "std": 7.884,
+        "min": 0.0,
+        "25%": 27.3,
+        "50%": 32.0,
+        "75%": 36.6,
+        "max": 67.1
+      },
+      "diabetes_pedigree_function": {
+        "count": 768.0,
+        "mean": 0.472,
+        "std": 0.331,
+        "min": 0.078,
+        "25%": 0.244,
+        "50%": 0.372,
+        "75%": 0.626,
+        "max": 2.42
+      },
+      "age": {
+        "count": 768.0,
+        "mean": 33.241,
+        "std": 11.76,
+        "min": 21.0,
+        "25%": 24.0,
+        "50%": 29.0,
+        "75%": 41.0,
+        "max": 81.0
+      },
+      "outcome": {
+        "count": 768.0,
+        "mean": 0.349,
+        "std": 0.477,
+        "min": 0.0,
+        "25%": 0.0,
+        "50%": 0.0,
+        "75%": 1.0,
+        "max": 1.0
+      }
+    },
+    "out_of_plausible_range": {
+      "pregnancies": 0,
+      "glucose": 0,
+      "blood_pressure": 0,
+      "skin_thickness": 0,
+      "insulin": 0,
+      "bmi": 0,
+      "diabetes_pedigree_function": 0,
+      "age": 0
+    }
+  },
+  "validation": {
+    "passed": true,
+    "warnings": []
+  },
+  "cleaning": {
+    "rows_in": 768,
+    "duplicates_removed": 0,
+    "implausible_removed": 0,
+    "rows_out": 768
+  },
+  "splits": {
+    "train": {
+      "rows": 460,
+      "positive_rate": 0.3478
+    },
+    "validation": {
+      "rows": 154,
+      "positive_rate": 0.3506
+    },
+    "test": {
+      "rows": 154,
+      "positive_rate": 0.3506
+    }
+  },
+  "figures": [
+    "reports/figures/class_distribution.png",
+    "reports/figures/zero_counts.png",
+    "reports/figures/feature_distributions.png",
+    "reports/figures/correlation_heatmap.png",
+    "reports/figures/boxplots.png",
+    "reports/figures/missing_after_treatment.png"
+  ]
+}

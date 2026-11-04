@@ -1,0 +1,39 @@
+groups:
+  - name: diabetes-api
+    rules:
+      - alert: DiabetesApiDown
+        expr: up{job="diabetes-api"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: "Diabetes prediction API is unreachable"
+
+      - alert: ModelNotLoaded
+        expr: model_loaded == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: "No trained model is loaded; predictions are unavailable"
+
+      - alert: HighPredictionFailureRate
+        expr: |
+          sum(rate(prediction_failures_total{reason!="validation_error"}[5m]))
+            / clamp_min(sum(rate(prediction_requests_total[5m])), 1e-9) > 0.05
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "More than 5% of prediction requests are failing (excluding invalid input)"
+
+      - alert: HighPredictionLatency
+        expr: histogram_quantile(0.95, sum by (le) (rate(prediction_latency_seconds_bucket[5m]))) > 0.5
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "p95 prediction latency above 500 ms"
+
+      - alert: DataDriftDetected
+        expr: data_drift_alert == 1
+        labels: {severity: warning}
+        annotations:
+          summary: "Latest Evidently report exceeded drift / data-quality thresholds"
+          description: "Investigate reports/drift/. Drift does not prove reduced accuracy; do not retrain automatically."

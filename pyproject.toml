@@ -1,0 +1,23 @@
+[project]
+name = "diabetes-prediction-mlops"
+version = "1.0.0"
+description = "Educational diabetes-risk prediction system with an MLOps lifecycle"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["mlruns", "mlartifacts", ".dvc"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S"]
+ignore = ["S101", "S603", "S607", "S104", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning", "ignore:.*httpx.*"]
+markers = ["integration: uses the real dataset and a really trained model artifact"]

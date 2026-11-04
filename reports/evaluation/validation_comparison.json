@@ -1,0 +1,135 @@
+{
+  "selected": "random_forest",
+  "reason": "Random Forest had the highest validation specificity (0.770) while keeping recall >= 0.80 (recall=0.815); Brier score 0.150 was used as tie-breaker. Accuracy was not used for selection.",
+  "models": {
+    "logistic_regression": {
+      "training_seconds": 0.08,
+      "validation": {
+        "threshold": 0.37311273052646016,
+        "n": 154,
+        "accuracy": 0.7272727272727273,
+        "precision": 0.5789473684210527,
+        "recall": 0.8148148148148148,
+        "specificity": 0.68,
+        "f1": 0.676923076923077,
+        "roc_auc": 0.8553703703703703,
+        "pr_auc": 0.7572174121383598,
+        "brier_score": 0.15481001558768037,
+        "false_negative_rate": 0.18518518518518517,
+        "false_positive_rate": 0.32,
+        "confusion_matrix": {
+          "tn": 68,
+          "fp": 32,
+          "fn": 10,
+          "tp": 44
+        }
+      },
+      "validation_at_0_5": {
+        "threshold": 0.5,
+        "n": 154,
+        "accuracy": 0.7597402597402597,
+        "precision": 0.6349206349206349,
+        "recall": 0.7407407407407407,
+        "specificity": 0.77,
+        "f1": 0.6837606837606838,
+        "roc_auc": 0.8553703703703703,
+        "pr_auc": 0.7572174121383598,
+        "brier_score": 0.15481001558768037,
+        "false_negative_rate": 0.25925925925925924,
+        "false_positive_rate": 0.23,
+        "confusion_matrix": {
+          "tn": 77,
+          "fp": 23,
+          "fn": 14,
+          "tp": 40
+        }
+      }
+    },
+    "random_forest": {
+      "training_seconds": 0.515,
+      "validation": {
+        "threshold": 0.502677015632962,
+        "n": 154,
+        "accuracy": 0.7857142857142857,
+        "precision": 0.6567164179104478,
+        "recall": 0.8148148148148148,
+        "specificity": 0.77,
+        "f1": 0.7272727272727273,
+        "roc_auc": 0.8770370370370371,
+        "pr_auc": 0.7660000494551195,
+        "brier_score": 0.1496570623949167,
+        "false_negative_rate": 0.18518518518518517,
+        "false_positive_rate": 0.23,
+        "confusion_matrix": {
+          "tn": 77,
+          "fp": 23,
+          "fn": 10,
+          "tp": 44
+        }
+      },
+      "validation_at_0_5": {
+        "threshold": 0.5,
+        "n": 154,
+        "accuracy": 0.7857142857142857,
+        "precision": 0.6567164179104478,
+        "recall": 0.8148148148148148,
+        "specificity": 0.77,
+        "f1": 0.7272727272727273,
+        "roc_auc": 0.8770370370370371,
+        "pr_auc": 0.7660000494551195,
+        "brier_score": 0.1496570623949167,
+        "false_negative_rate": 0.18518518518518517,
+        "false_positive_rate": 0.23,
+        "confusion_matrix": {
+          "tn": 77,
+          "fp": 23,
+          "fn": 10,
+          "tp": 44
+        }
+      }
+    },
+    "xgboost": {
+      "training_seconds": 0.285,
+      "validation": {
+        "threshold": 0.4070906639099121,
+        "n": 154,
+        "accuracy": 0.7727272727272727,
+        "precision": 0.6376811594202898,
+        "recall": 0.8148148148148148,
+        "specificity": 0.75,
+        "f1": 0.7154471544715447,
+        "roc_auc": 0.8503703703703703,
+        "pr_auc": 0.7248815204356829,
+        "brier_score": 0.15874083675988174,
+        "false_negative_rate": 0.18518518518518517,
+        "false_positive_rate": 0.25,
+        "confusion_matrix": {
+          "tn": 75,
+          "fp": 25,
+          "fn": 10,
+          "tp": 44
+        }
+      },
+      "validation_at_0_5": {
+        "threshold": 0.5,
+        "n": 154,
+        "accuracy": 0.7597402597402597,
+        "precision": 0.639344262295082,
+        "recall": 0.7222222222222222,
+        "specificity": 0.78,
+        "f1": 0.6782608695652174,
+        "roc_auc": 0.8503703703703703,
+        "pr_auc": 0.7248815204356829,
+        "brier_score": 0.15874083675988174,
+        "false_negative_rate": 0.2777777777777778,
+        "false_positive_rate": 0.22,
+        "confusion_matrix": {
+          "tn": 78,
+          "fp": 22,
+          "fn": 15,
+          "tp": 39
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+# Pipeline parameters tracked by DVC (`dvc params diff` shows changes between runs).
+
+data:
+  # Public copy of the Pima Indians Diabetes Database (768 rows, 8 features + Outcome).
+  source_url: https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv
+  source_name: "Pima Indians Diabetes Database (NIDDK; distributed via the UCI ML Repository / Kaggle)"
+  raw_path: data/raw/diabetes_raw.csv
+  # SHA-256 of the file published at source_url. Verified on download and in retraining.
+  expected_sha256: 6bfe5d0f379d17a0e0819b996407e3c09bf80febd4287f2ed212190dfff154af
+  processed_dir: data/processed
+
+split:
+  random_seed: 42
+  # Fractions of the full dataset. Test set is held out and only used by evaluate.py.
+  validation_size: 0.2
+  test_size: 0.2
+
+# Medical fields in which a recorded value of 0 is physiologically implausible and is a
+# documented missing-value code in this dataset. Pregnancies (0 is valid), DPF and Age are
+# deliberately NOT included.
+zero_as_missing:
+  - glucose
+  - blood_pressure
+  - skin_thickness
+  - insulin
+  - bmi
+
+models:
+  logistic_regression:
+    C: 1.0
+    max_iter: 1000
+    class_weight: balanced
+  random_forest:
+    n_estimators: 400
+    max_depth: 6
+    min_samples_leaf: 4
+    class_weight: balanced
+  xgboost:
+    n_estimators: 300
+    max_depth: 3
+    learning_rate: 0.05
+    subsample: 0.9
+    colsample_bytree: 0.9
+    # Set dynamically from the training class ratio when null.
+    scale_pos_weight: null
+
+selection:
+  # The decision threshold of every model is tuned on the validation set so that it
+  # reaches at least this sensitivity (missing a diabetic case is the costlier error).
+  target_recall: 0.80
+  # Among models that reach target_recall, the one with the highest validation
+  # specificity at that threshold wins; ties are broken by the lower Brier score.
+  primary_metric: specificity
+  tie_breaker: brier_score

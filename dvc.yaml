@@ -1,0 +1,68 @@
+# Reproducible pipeline: `dvc repro` runs only the stages whose deps/params changed.
+# The raw dataset itself is versioned with `dvc add data/raw/diabetes_raw.csv`.
+stages:
+  prepare:
+    cmd: python -m src.data_processing
+    deps:
+      - data/raw/diabetes_raw.csv
+      - src/data_processing.py
+      - src/common.py
+    params:
+      - data
+      - split
+      - zero_as_missing
+    outs:
+      - data/processed/train.csv
+      - data/processed/validation.csv
+      - data/processed/test.csv
+      - reports/figures:
+          cache: false
+    metrics:
+      - data/processed/data_summary.json:
+          cache: false
+
+  train:
+    cmd: python -m src.train
+    deps:
+      - data/processed/train.csv
+      - data/processed/validation.csv
+      - src/train.py
+      - src/features.py
+      - src/evaluate.py
+      - src/tracking.py
+    params:
+      - models
+      - selection
+      - split.random_seed
+      - zero_as_missing
+    outs:
+      - models/candidate/model.joblib
+      - models/candidate/metadata.json:
+          cache: false
+    metrics:
+      - reports/evaluation/validation_comparison.json:
+          cache: false
+
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+      - models/candidate/model.joblib
+      - models/candidate/metadata.json
+      - data/processed/test.csv
+      - src/evaluate.py
+      - configs/model_config.yaml
+    outs:
+      - models/candidate/evaluation.json:
+          cache: false
+    metrics:
+      - reports/evaluation/test_metrics.json:
+          cache: false
+    plots:
+      - reports/evaluation/roc_curve.png:
+          cache: false
+      - reports/evaluation/precision_recall_curve.png:
+          cache: false
+      - reports/evaluation/confusion_matrix.png:
+          cache: false
+      - reports/evaluation/calibration_curve.png:
+          cache: false
