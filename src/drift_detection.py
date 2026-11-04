@@ -98,12 +98,12 @@ def run_drift_check(current_path: str | None = None, config: dict[str, Any] | No
     features = mon["drift_features"]
     now = now or datetime.now(UTC)
 
-    reference = pd.read_csv(resolve(mon["reference_path"]))
     current = _load_current(config, current_path)
     if len(current) < mon["min_current_rows"]:
         raise InsufficientDataError(
             f"Only {len(current)} current rows; at least {mon['min_current_rows']} are needed for a meaningful test."
         )
+    reference = pd.read_csv(resolve(mon["reference_path"]))
 
     # Same zero-as-missing convention as training so distributions are comparable. A 0 here means
     # "not measured", so it must count as missing, not as an out-of-range value, in the quality check.
