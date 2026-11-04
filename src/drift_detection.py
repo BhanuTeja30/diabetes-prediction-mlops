@@ -119,10 +119,12 @@ def run_drift_check(current_path: str | None = None, config: dict[str, Any] | No
     # serving model produces on the (unseen during training) validation split.
     model_dir = resolve(model_dir or config["model"]["production_dir"])
     ref_rate = cur_rate = None
-    if (model_dir / "model.joblib").exists():
+    # The validation split sits next to the configured training reference.
+    validation_path = resolve(mon["reference_path"]).parent / "validation.csv"
+    if (model_dir / "model.joblib").exists() and validation_path.exists():
         model = joblib.load(model_dir / "model.joblib")
         threshold = read_json(model_dir / "metadata.json")["decision_threshold"]
-        val = pd.read_csv(resolve("data/processed/validation.csv"))
+        val = pd.read_csv(validation_path)
         ref_rate = float((model.predict_proba(val[FEATURES])[:, 1] >= threshold).mean())
         if "prediction" in current:
             cur_rate = float(current["prediction"].mean())
